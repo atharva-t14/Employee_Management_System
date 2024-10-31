@@ -107,6 +107,28 @@ const SignUpPage = () => {
                     </div>
                     <div className="mb-4">
                         <input
+                            type="text"
+                            name="Salary"
+                            // value={}
+                            // onChange={handleChange}
+                            placeholder="Salary"
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            name="role"
+                            // value={}
+                            // onChange={handleChange}
+                            placeholder="Role"
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <input
                             type="password"
                             name="password"
                             value={formData.password}

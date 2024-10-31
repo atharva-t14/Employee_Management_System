@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const salarySchema = new mongoose.Schema({
-    employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
+    // employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
+    employeeId: { type: 'String', required: true },
     month: { type: String, required: true },
     sickLeavesAlloted: { type: Number, required: true },
     sickLeavesTaken: { type: Number, required: true },

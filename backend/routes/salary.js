@@ -20,12 +20,16 @@ router.post('/:employeeId/leave', async (req, res) => {
     try {
         const { type, date } = req.body;
         console.log(`Scheduling leave for employeeId: ${req.params.employeeId}, type: ${type}, date: ${date}`);
+        console.log("hi");
         const salaryDetails = await Salary.findOne({ employeeId: req.params.employeeId });
+
         if (!salaryDetails) {
             return res.status(404).json({ message: 'Salary details not found' });
         }
+        console.log("hi");
 
         salaryDetails.scheduledLeaves = salaryDetails.scheduledLeaves || [];
+        console.log(salaryDetails.scheduledLeaves);
         salaryDetails.scheduledLeaves.push({ type, date });
 
         if (type === 'sick') {
