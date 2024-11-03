@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
 const salaryRoutes = require("./routes/salary");
 const leavesRoutes = require("./routes/leaves");
+const adminRoutes = require("./routes/admin");
 const cors = require("cors");
 
 const app = express();
@@ -17,6 +18,7 @@ mongoose.connect(
 app.use("/api/auth", authRoutes);
 app.use("/api/salary", salaryRoutes);
 app.use("/api/leaves", leavesRoutes);
+app.use("/api/admin", adminRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -65,26 +67,26 @@ app.get("/leaves/:employeeId", async (req, res) => {
   }
 });
 
-// Fetch all employees
-app.get("/api/admin/employees", async (req, res) => {
-  try {
-    const employees = await Employee.find().select("-password");
-    res.json(employees);
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-    res.status(500).send("Server error");
-  }
-});
+// // Fetch all employees
+// app.get("/api/admin/employees", async (req, res) => {
+//   try {
+//     const employees = await Employee.find().select("-password");
+//     res.json(employees);
+//   } catch (error) {
+//     console.error("Error fetching employees:", error);
+//     res.status(500).send("Server error");
+//   }
+// });
 
 // Fetch all leave requests
-app.get("/api/admin/leave-requests", async (req, res) => {
-  try {
-    const leaveRequests = await Leaves.find();
-    res.json(leaveRequests);
-  } catch (error) {
-    console.error("Error fetching leave requests:", error);
-    res.status(500).send("Server error");
-  }
-});
+// app.get("/api/admin/leave-requests", async (req, res) => {
+//   try {
+//     const leaveRequests = await Leaves.find();
+//     res.json(leaveRequests);
+//   } catch (error) {
+//     console.error("Error fetching leave requests:", error);
+//     res.status(500).send("Server error");
+//   }
+// });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
