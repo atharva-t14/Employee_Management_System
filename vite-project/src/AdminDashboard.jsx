@@ -1,10 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from './axiosConfig';
 import { useNavigate } from 'react-router-dom';
+import Modal from './Modal';
 
 const AdminDashboard = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    email: '',
+    phoneNumber: '',
+    role: '',
+    salary: '',
+    sickLeavesAvailable: '',
+    casualLeavesAvailable: ''
+  });
+  const [createFormData, setCreateFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    dateOfBirth: '',
+    password: '',
+    role: '',
+    salary: ''
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +65,66 @@ const AdminDashboard = () => {
     navigate(`/profile/${employeeId}`);
   };
 
+  const handleEditEmployee = (employee) => {
+    setEditingEmployee(employee);
+    setEditFormData({
+      email: employee.email,
+      phoneNumber: employee.phoneNumber,
+      role: employee.role,
+      salary: employee.salary,
+      sickLeavesAvailable: employee.sickLeavesAvailable,
+      casualLeavesAvailable: employee.casualLeavesAvailable
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData({ ...editFormData, [name]: value });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axiosInstance.put(`/admin/employee/${editingEmployee.employeeId}`, editFormData);
+      setEmployees(employees.map(emp => emp.employeeId === editingEmployee.employeeId ? response.data : emp));
+      setEditingEmployee(null);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error updating employee:", error);
+    }
+  };
+
+  const handleDeleteEmployee = async (employeeId) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete the employee with Employee ID ${employeeId} and all their data?`);
+    if (confirmDelete) {
+      try {
+        await axiosInstance.delete(`/admin/employee/${employeeId}`);
+        setEmployees(employees.filter(emp => emp.employeeId !== employeeId));
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+      }
+    }
+  };
+
+  const handleCreateFormChange = (e) => {
+    const { name, value } = e.target;
+    setCreateFormData({ ...createFormData, [name]: value });
+  };
+
+  const handleCreateEmployee = async () => {
+    try {
+      const response = await axiosInstance.post('/admin/employee', createFormData);
+      setEmployees([...employees, response.data]);
+      setIsCreateModalOpen(false);
+    } catch (error) {
+      if (error.response && error.response.data.message === 'Email already in use') {
+        alert('Email already in use. Please use another email.');
+      } else {
+        console.error('Error creating employee:', error);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
@@ -79,6 +161,12 @@ const AdminDashboard = () => {
         </div>
         <div className="mb-4">
           <h3 className="text-lg font-bold mb-2">All Employees</h3>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-blue-500 text-white p-2 rounded mb-4"
+          >
+            Create New Employee
+          </button>
           <table className="w-full border-collapse">
             <thead>
               <tr>
@@ -103,12 +191,188 @@ const AdminDashboard = () => {
                     >
                       View Profile
                     </button>
+                    <button
+                      onClick={() => handleEditEmployee(employee)}
+                      className="bg-yellow-500 text-white p-2 rounded ml-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteEmployee(employee.employeeId)}
+                      className="bg-red-500 text-white p-2 rounded ml-2"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-2">Edit Employee</h3>
+          <form>
+            <div className="mb-4">
+              <label className="block text-gray-700">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={editFormData.email}
+                onChange={handleEditFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Phone Number</label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={editFormData.phoneNumber}
+                onChange={handleEditFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Role</label>
+              <input
+                type="text"
+                name="role"
+                value={editFormData.role}
+                onChange={handleEditFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Salary</label>
+              <input
+                type="number"
+                name="salary"
+                value={editFormData.salary}
+                onChange={handleEditFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Sick Leaves Available</label>
+              <input
+                type="number"
+                name="sickLeavesAvailable"
+                value={editFormData.sickLeavesAvailable}
+                onChange={handleEditFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Casual Leaves Available</label>
+              <input
+                type="number"
+                name="casualLeavesAvailable"
+                value={editFormData.casualLeavesAvailable}
+                onChange={handleEditFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleSaveEdit}
+              className="bg-green-500 text-white p-2 rounded"
+            >
+              Save
+            </button>
+          </form>
+        </Modal>
+        <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-2">Create New Employee</h3>
+          <form>
+            <div className="mb-4">
+              <label className="block text-gray-700">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={createFormData.firstName}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={createFormData.lastName}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={createFormData.email}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Phone Number</label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={createFormData.phoneNumber}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Date of Birth</label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={createFormData.dateOfBirth}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={createFormData.password}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Role</label>
+              <input
+                type="text"
+                name="role"
+                value={createFormData.role}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Salary</label>
+              <input
+                type="number"
+                name="salary"
+                value={createFormData.salary}
+                onChange={handleCreateFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleCreateEmployee}
+              className="bg-green-500 text-white p-2 rounded"
+            >
+              Save
+            </button>
+          </form>
+        </Modal>
       </div>
     </div>
   );
