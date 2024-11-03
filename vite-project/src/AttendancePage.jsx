@@ -45,25 +45,20 @@ const AttendancePage = () => {
       console.log(
         `Scheduling leave for employeeId: ${employeeId}, type: ${leaveType}, date: ${selectedDate}`
       );
-      // Fixed API endpoint - removed /auth from the path
       const response = await axiosInstance.post(`/leaves/${employeeId}`, {
         leaveType,
         date: selectedDate,
-        employeeId, // Changed from empId to match backend expectation
       });
       console.log("Leave scheduled:", response.data);
 
       // Refresh leave data after scheduling
-      const updatedLeaveData = await axiosInstance.get(
-        `/salary/${employeeId}/leave`
-      );
+      const updatedLeaveData = await axiosInstance.get(`/salary/${employeeId}`);
       setLeaveData(updatedLeaveData.data);
 
       setShowDatePicker(false);
       setSelectedDate("");
     } catch (error) {
       console.error("Error scheduling leave:", error);
-      // Add user-friendly error handling
       alert("Failed to schedule leave. Please try again later.");
     }
   };
