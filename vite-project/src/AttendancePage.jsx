@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from './axiosConfig';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import axiosInstance from "./axiosConfig";
+import { useParams } from "react-router-dom";
 
 const AttendancePage = () => {
   const { employeeId } = useParams();
   const [leaveData, setLeaveData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [leaveType, setLeaveType] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [leaveType, setLeaveType] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
 
   useEffect(() => {
     const fetchLeaveData = async () => {
       try {
         console.log(`Fetching leave data for employeeId: ${employeeId}`);
         const response = await axiosInstance.get(`/salary/${employeeId}`);
-        console.log('Leave data fetched:', response.data);
+        console.log("Leave data fetched:", response.data);
         setLeaveData(response.data);
       } catch (error) {
-        console.error('Error fetching leave data:', error);
+        console.error("Error fetching leave data:", error);
       } finally {
         setLoading(false);
       }
@@ -42,25 +42,29 @@ const AttendancePage = () => {
 
   const handleScheduleLeave = async () => {
     try {
-      console.log(`Scheduling leave for employeeId: ${employeeId}, type: ${leaveType}, date: ${selectedDate}`);
+      console.log(
+        `Scheduling leave for employeeId: ${employeeId}, type: ${leaveType}, date: ${selectedDate}`
+      );
       // Fixed API endpoint - removed /auth from the path
       const response = await axiosInstance.post(`/leaves/${employeeId}`, {
         leaveType,
         date: selectedDate,
-        employeeId // Changed from empId to match backend expectation
+        employeeId, // Changed from empId to match backend expectation
       });
-      console.log('Leave scheduled:', response.data);
+      console.log("Leave scheduled:", response.data);
 
       // Refresh leave data after scheduling
-      const updatedLeaveData = await axiosInstance.get(`/salary/${employeeId}/leave`);
+      const updatedLeaveData = await axiosInstance.get(
+        `/salary/${employeeId}/leave`
+      );
       setLeaveData(updatedLeaveData.data);
 
       setShowDatePicker(false);
-      setSelectedDate('');
+      setSelectedDate("");
     } catch (error) {
-      console.error('Error scheduling leave:', error);
+      console.error("Error scheduling leave:", error);
       // Add user-friendly error handling
-      alert('Failed to schedule leave. Please try again later.');
+      alert("Failed to schedule leave. Please try again later.");
     }
   };
 
@@ -73,20 +77,29 @@ const AttendancePage = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">My Attendance</h2>
         <div className="mb-4">
-          <p><strong>Sick Leaves Allotted:</strong> {leaveData.sickLeavesAlloted}</p>
-          <p><strong>Sick Leaves Taken:</strong> {leaveData.sickLeavesTaken}</p>
-          <p><strong>Casual Leaves Allotted:</strong> {leaveData.casualLeavesAlloted}</p>
-          <p><strong>Casual Leaves Taken:</strong> {leaveData.casualLeavesTaken}</p>
+          <p>
+            <strong>Sick Leaves Allotted:</strong> {leaveData.sickLeavesAlloted}
+          </p>
+          <p>
+            <strong>Sick Leaves Taken:</strong> {leaveData.sickLeavesTaken}
+          </p>
+          <p>
+            <strong>Casual Leaves Allotted:</strong>{" "}
+            {leaveData.casualLeavesAlloted}
+          </p>
+          <p>
+            <strong>Casual Leaves Taken:</strong> {leaveData.casualLeavesTaken}
+          </p>
         </div>
         <div className="mb-4">
           <button
-            onClick={() => handleTakeLeave('sick')}
+            onClick={() => handleTakeLeave("sick")}
             className="w-full bg-blue-500 text-white p-2 rounded mb-2"
           >
             Take Sick Leave
           </button>
           <button
-            onClick={() => handleTakeLeave('casual')}
+            onClick={() => handleTakeLeave("casual")}
             className="w-full bg-green-500 text-white p-2 rounded"
           >
             Take Casual Leave
@@ -119,12 +132,15 @@ const AttendancePage = () => {
               </tr>
             </thead>
             <tbody>
-              {leaveData.scheduledLeaves && leaveData.scheduledLeaves.map((leave, index) => (
-                <tr key={index}>
-                  <td className="border p-2">{leave.type}</td>
-                  <td className="border p-2">{new Date(leave.date).toLocaleDateString()}</td>
-                </tr>
-              ))}
+              {leaveData.scheduledLeaves &&
+                leaveData.scheduledLeaves.map((leave, index) => (
+                  <tr key={index}>
+                    <td className="border p-2">{leave.type}</td>
+                    <td className="border p-2">
+                      {new Date(leave.date).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

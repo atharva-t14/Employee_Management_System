@@ -1,24 +1,25 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const authRoutes = require('./routes/auth');
-const salaryRoutes = require('./routes/salary');
-const leavesRoutes = require('./routes/leaves');
-const cors = require('cors');
+const express = require("express");
+const mongoose = require("mongoose");
+const authRoutes = require("./routes/auth");
+const salaryRoutes = require("./routes/salary");
+const leavesRoutes = require("./routes/leaves");
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/employee_management', {});
+mongoose.connect(
+  "mongodb+srv://vazeswaroop:7oS2X0TDAD6ahidh@secluster.9kpoo.mongodb.net/?retryWrites=true&w=majority&appName=SECluster",
+  {}
+);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/salary', salaryRoutes);
-app.use('/api/leaves', leavesRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/salary", salaryRoutes);
+app.use("/api/leaves", leavesRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
 
 /*
 const express = require('express');
@@ -59,37 +60,62 @@ app.post('/getEmployeeId', (req, res) => {
 });
 
 
-
-app.get('/profile/:id', (req, res) => {
-    db.query('SELECT * FROM EMPLOYEE where EMPLOYEE_ID = ?', [req.params.id], (err, results) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-        if (results.length > 0) {
-            res.json(results[0]);
-        } else {
-            res.status(404).send('Profile not found');
-        }
-    });
-})
-
-
-app.get('/salary/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const result = await db.query(
-            'SELECT SICK_LEAVES_ALLOTED, SICK_LEAVES_TAKEN, CASUAL_LEAVES_ALLOTED, CASUAL_LEAVES_TAKEN FROM SALARY WHERE EMPLOYEE_ID = $1',
-            [id]
-        );
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error fetching salary data:', error);
-        res.status(500).send('Server error');
-    }
-});
-
-
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
 */
+// app.get("/profile/:id", (req, res) => {
+//   db.query(
+//     "SELECT * FROM EMPLOYEE where EMPLOYEE_ID = ?",
+//     [req.params.id],
+//     (err, results) => {
+//       if (err) {
+//         return res.status(500).send(err);
+//       }
+//       if (results.length > 0) {
+//         res.json(results[0]);
+//       } else {
+//         res.status(404).send("Profile not found");
+//       }
+//     }
+//   );
+// });
+app.get("/profile/:id", async (req, res) => {
+  try {
+    const employee = await Employee.findOne({
+      employeeId: req.params.id,
+    }).select("-password");
+    if (!employee) {
+      return res.status(404).send("Profile not found");
+    }
+    res.json(employee);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+/*
+
+*/
+// app.get("/salary/:id", async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const result = await db.query(
+//       "SELECT SICK_LEAVES_ALLOTED, SICK_LEAVES_TAKEN, CASUAL_LEAVES_ALLOTED, CASUAL_LEAVES_TAKEN FROM SALARY WHERE EMPLOYEE_ID = $1",
+//       [id]
+//     );
+//     res.json(result.rows[0]);
+//   } catch (error) {
+//     console.error("Error fetching salary data:", error);
+//     res.status(500).send("Server error");
+//   }
+// });
+app.get("/salary/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const salaryDetails = await Salary.findOne({ employeeId: id });
+    if (!salaryDetails) {
+      return res.status(404).json({ message: "Salary details not found" });
+    }
+    res.json(salaryDetails);
+  } catch (error) {
+    console.error("Error fetching salary data:", error);
+    res.status(500).send("Server error");
+  }
+});
