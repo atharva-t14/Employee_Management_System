@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = "atharva";
-
+const dotenv = require('dotenv');
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
 module.exports = function (req, res, next) {
     const token = req.header('Authorization');
     if (!token) {

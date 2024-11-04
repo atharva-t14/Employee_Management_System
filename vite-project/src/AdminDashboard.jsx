@@ -176,7 +176,7 @@ const AdminDashboard = () => {
             <thead>
               <tr>
                 <th className="border p-2">Employee ID</th>
-                <th className="border p-2">Employee Name</th>
+                {/* <th className="border p-2">Employee Name</th> */}
                 <th className="border p-2">Leave Type</th>
                 <th className="border p-2">Date</th>
                 <th className="border p-2">Actions</th>
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
               {leaveRequests.map((leave, index) => (
                 <tr key={index}>
                   <td className="border p-2">{leave.employee}</td>
-                  <td className="border p-2">{leave.employeeName}</td>
+                  {/* <td className="border p-2">{leave.employeeName}</td> */}
                   <td className="border p-2">{leave.leaveType}</td>
                   <td className="border p-2">
                     {new Date(leave.date).toLocaleDateString()}

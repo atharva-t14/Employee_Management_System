@@ -5,22 +5,25 @@ const salaryRoutes = require("./routes/salary");
 const leavesRoutes = require("./routes/leaves");
 const adminRoutes = require("./routes/admin");
 const cors = require("cors");
-
+require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+const PORT = process.env.PORT || 3000;
+const MONOGO_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
+
 mongoose.connect(
-  "mongodb+srv://vazeswaroop:7oS2X0TDAD6ahidh@secluster.9kpoo.mongodb.net/?retryWrites=true&w=majority&appName=SECluster",
-  {}
+  MONOGO_URI,
+  {
+  },
 );
 
 app.use("/api/auth", authRoutes);
 app.use("/api/salary", salaryRoutes);
 app.use("/api/leaves", leavesRoutes);
 app.use("/api/admin", adminRoutes);
-
-const PORT = process.env.PORT || 3000;
 
 app.get("/profile/:id", async (req, res) => {
   try {

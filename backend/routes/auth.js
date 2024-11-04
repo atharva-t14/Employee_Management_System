@@ -3,9 +3,11 @@ const jwt = require("jsonwebtoken");
 const Employee = require("../models/Employee");
 const Salary = require("../models/Salary");
 const Leaves = require("../models/Leaves");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const router = express.Router();
-const JWT_SECRET = "atharva";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Sign-up route
 // router.post('/signup', async (req, res) => {
