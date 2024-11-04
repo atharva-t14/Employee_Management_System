@@ -47,7 +47,7 @@ const LoginPage = () => {
     }
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-teal-400 to-blue-500">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Log in to your profile
@@ -77,7 +77,7 @@ const LoginPage = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded"
+            className="w-full bg-gradient-to-r from-teal-400 to-blue-500 hover:from-purple-500 hover:to-blue-500 text-white p-2 rounded"
           >
             Log In
           </button>

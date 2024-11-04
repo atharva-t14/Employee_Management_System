@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from './axiosConfig';
-import { useNavigate } from 'react-router-dom';
-import Modal from './Modal';
+import React, { useEffect, useState } from "react";
+import axiosInstance from "./axiosConfig";
+import { useNavigate } from "react-router-dom";
+import Modal from "./Modal";
 
 const AdminDashboard = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [editFormData, setEditFormData] = useState({
-    email: '',
-    phoneNumber: '',
-    role: '',
-    salary: '',
-    sickLeavesAvailable: '',
-    casualLeavesAvailable: ''
+    email: "",
+    phoneNumber: "",
+    role: "",
+    salary: "",
+    sickLeavesAvailable: "",
+    casualLeavesAvailable: "",
   });
   const [createFormData, setCreateFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    dateOfBirth: '',
-    password: '',
-    role: '',
-    salary: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    dateOfBirth: "",
+    password: "",
+    role: "",
+    salary: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDistributeModalOpen, setIsDistributeModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [month, setMonth] = useState('');
+  const [month, setMonth] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   const handleApproveLeave = async (leaveId) => {
     try {
       await axiosInstance.post(`/admin/approve-leave/${leaveId}`);
-      setLeaveRequests(leaveRequests.filter(leave => leave._id !== leaveId));
+      setLeaveRequests(leaveRequests.filter((leave) => leave._id !== leaveId));
     } catch (error) {
       console.error("Error approving leave request:", error);
     }
@@ -76,7 +76,7 @@ const AdminDashboard = () => {
       role: employee.role,
       salary: employee.salary,
       sickLeavesAvailable: employee.sickLeavesAvailable,
-      casualLeavesAvailable: employee.casualLeavesAvailable
+      casualLeavesAvailable: employee.casualLeavesAvailable,
     });
     setIsModalOpen(true);
   };
@@ -88,8 +88,15 @@ const AdminDashboard = () => {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axiosInstance.put(`/admin/employee/${editingEmployee.employeeId}`, editFormData);
-      setEmployees(employees.map(emp => emp.employeeId === editingEmployee.employeeId ? response.data : emp));
+      const response = await axiosInstance.put(
+        `/admin/employee/${editingEmployee.employeeId}`,
+        editFormData
+      );
+      setEmployees(
+        employees.map((emp) =>
+          emp.employeeId === editingEmployee.employeeId ? response.data : emp
+        )
+      );
       setEditingEmployee(null);
       setIsModalOpen(false);
     } catch (error) {
@@ -98,11 +105,13 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteEmployee = async (employeeId) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete the employee with Employee ID ${employeeId} and all their data?`);
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the employee with Employee ID ${employeeId} and all their data?`
+    );
     if (confirmDelete) {
       try {
         await axiosInstance.delete(`/admin/employee/${employeeId}`);
-        setEmployees(employees.filter(emp => emp.employeeId !== employeeId));
+        setEmployees(employees.filter((emp) => emp.employeeId !== employeeId));
       } catch (error) {
         console.error("Error deleting employee:", error);
       }
@@ -116,14 +125,20 @@ const AdminDashboard = () => {
 
   const handleCreateEmployee = async () => {
     try {
-      const response = await axiosInstance.post('/admin/employee', createFormData);
+      const response = await axiosInstance.post(
+        "/admin/employee",
+        createFormData
+      );
       setEmployees([...employees, response.data]);
       setIsCreateModalOpen(false);
     } catch (error) {
-      if (error.response && error.response.data.message === 'Email already in use') {
-        alert('Email already in use. Please use another email.');
+      if (
+        error.response &&
+        error.response.data.message === "Email already in use"
+      ) {
+        alert("Email already in use. Please use another email.");
       } else {
-        console.error('Error creating employee:', error);
+        console.error("Error creating employee:", error);
       }
     }
   };
@@ -140,19 +155,19 @@ const AdminDashboard = () => {
   const handleSaveDistribute = async () => {
     try {
       const monthNumber = new Date(`${month}-01`).getMonth() + 1;
-      const response = await axiosInstance.post('/admin/distribute-salary', {
+      const response = await axiosInstance.post("/admin/distribute-salary", {
         employeeId: selectedEmployee.employeeId,
         month,
-        monthNumber
+        monthNumber,
       });
       setIsDistributeModalOpen(false);
     } catch (error) {
-      console.error('Error distributing salary:', error);
+      console.error("Error distributing salary:", error);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
         <h2 className="text-2xl font-bold mb-6 text-center">Admin Dashboard</h2>
         <div className="mb-4">
@@ -173,11 +188,13 @@ const AdminDashboard = () => {
                   <td className="border p-2">{leave.employee}</td>
                   <td className="border p-2">{leave.employeeName}</td>
                   <td className="border p-2">{leave.leaveType}</td>
-                  <td className="border p-2">{new Date(leave.date).toLocaleDateString()}</td>
+                  <td className="border p-2">
+                    {new Date(leave.date).toLocaleDateString()}
+                  </td>
                   <td className="border p-2">
                     <button
                       onClick={() => handleApproveLeave(leave._id)}
-                      className="bg-green-500 text-white p-2 rounded"
+                      className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded"
                     >
                       Approve
                     </button>
@@ -191,7 +208,7 @@ const AdminDashboard = () => {
           <h3 className="text-lg font-bold mb-2">All Employees</h3>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-blue-500 text-white p-2 rounded mb-4"
+            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-2 rounded mb-4"
           >
             Create New Employee
           </button>
@@ -209,31 +226,33 @@ const AdminDashboard = () => {
               {employees.map((employee, index) => (
                 <tr key={index}>
                   <td className="border p-2">{employee.employeeId}</td>
-                  <td className="border p-2">{employee.firstName} {employee.lastName}</td>
+                  <td className="border p-2">
+                    {employee.firstName} {employee.lastName}
+                  </td>
                   <td className="border p-2">{employee.role}</td>
                   <td className="border p-2">{employee.salary}</td>
-                  <td className="border p-2">
+                  <td className="border p-2 flex flex-row ">
                     <button
                       onClick={() => handleViewProfile(employee.employeeId)}
-                      className="bg-blue-500 text-white p-2 rounded"
+                      className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-2 rounded"
                     >
                       View Profile
                     </button>
                     <button
                       onClick={() => handleEditEmployee(employee)}
-                      className="bg-yellow-500 text-white p-2 rounded ml-2"
+                      className="bg-gradient-to-r from-yellow-500 to-orange-400 text-white p-2 rounded ml-2"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteEmployee(employee.employeeId)}
-                      className="bg-red-500 text-white p-2 rounded ml-2"
+                      className="bg-gradient-to-r from-pink-500 to-orange-500 text-white p-2 rounded ml-2"
                     >
                       Delete
                     </button>
                     <button
                       onClick={() => handleDistributeSalary(employee)}
-                      className="bg-green-500 text-white p-2 rounded ml-2"
+                      className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded ml-2"
                     >
                       Distribute Salary
                     </button>
@@ -287,7 +306,9 @@ const AdminDashboard = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700">Sick Leaves Available</label>
+              <label className="block text-gray-700">
+                Sick Leaves Available
+              </label>
               <input
                 type="number"
                 name="sickLeavesAvailable"
@@ -297,7 +318,9 @@ const AdminDashboard = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700">Casual Leaves Available</label>
+              <label className="block text-gray-700">
+                Casual Leaves Available
+              </label>
               <input
                 type="number"
                 name="casualLeavesAvailable"
@@ -309,13 +332,16 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={handleSaveEdit}
-              className="bg-green-500 text-white p-2 rounded"
+              className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded"
             >
               Save
             </button>
           </form>
         </Modal>
-        <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
+        <Modal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+        >
           <h3 className="text-lg font-bold mb-2">Create New Employee</h3>
           <form>
             <div className="mb-4">
@@ -401,13 +427,16 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={handleCreateEmployee}
-              className="bg-green-500 text-white p-2 rounded"
+              className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded"
             >
               Save
             </button>
           </form>
         </Modal>
-        <Modal isOpen={isDistributeModalOpen} onClose={() => setIsDistributeModalOpen(false)}>
+        <Modal
+          isOpen={isDistributeModalOpen}
+          onClose={() => setIsDistributeModalOpen(false)}
+        >
           <h3 className="text-lg font-bold mb-2">Distribute Salary</h3>
           <form>
             <div className="mb-4">
@@ -422,7 +451,7 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={handleSaveDistribute}
-              className="bg-green-500 text-white p-2 rounded"
+              className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded"
             >
               Distribute
             </button>

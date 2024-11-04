@@ -5,79 +5,88 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const SalaryDetails = () => {
-    const { employeeId } = useParams();
-    const [salaryDetails, setSalaryDetails] = useState([]);
+  const { employeeId } = useParams();
+  const [salaryDetails, setSalaryDetails] = useState([]);
 
-    useEffect(() => {
-        const fetchSalaryDetails = async () => {
-            try {
-                const response = await axiosInstance.get(`/salary/salaries/${employeeId}`);
-                setSalaryDetails(response.data);
-            } catch (error) {
-                console.error("Error fetching salary details:", error);
-            }
-        };
-
-        if (employeeId) {
-            fetchSalaryDetails();
-        }
-    }, [employeeId]);
-
-    const downloadPDF = () => {
-        const doc = new jsPDF();
-        doc.text("Salary Report", 20, 10);
-        doc.autoTable({
-            head: [["Month", "Base Salary (Yearly)", "Tax Slab", "Tax Deducted", "Salary for the Month"]],
-            body: salaryDetails.map(salary => [
-                salary.month,
-                salary.baseSalary,
-                salary.taxSlab,
-                salary.tax,
-                salary.finalSalary
-            ]),
-        });
-        doc.save("salary_report.pdf");
+  useEffect(() => {
+    const fetchSalaryDetails = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/salary/salaries/${employeeId}`
+        );
+        setSalaryDetails(response.data);
+      } catch (error) {
+        console.error("Error fetching salary details:", error);
+      }
     };
 
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
-                <h2 className="text-2xl font-bold mb-6 text-center">Salary Details</h2>
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr>
-                            <th className="border p-2">Month</th>
-                            <th className="border p-2">Base Salary (Yearly)</th>
-                            <th className="border p-2">Tax Slab</th>
-                            <th className="border p-2">Tax Deducted</th>
-                            <th className="border p-2">Salary for the Month</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {salaryDetails.map((salary, index) => (
-                            <tr key={index}>
-                                <td className="border p-2">{salary.month}</td>
-                                <td className="border p-2">{salary.baseSalary}</td>
-                                <td className="border p-2">{salary.taxSlab}</td>
-                                <td className="border p-2">{salary.tax}</td>
-                                <td className="border p-2">{salary.finalSalary}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <button
-                    onClick={downloadPDF}
-                    className="bg-blue-500 text-white p-2 rounded mt-4"
-                >
-                    Download Salary Report (PDF)
-                </button>
-            </div>
-        </div>
-    );
+    if (employeeId) {
+      fetchSalaryDetails();
+    }
+  }, [employeeId]);
+
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Salary Report", 20, 10);
+    doc.autoTable({
+      head: [
+        [
+          "Month",
+          "Base Salary (Yearly)",
+          "Tax Slab",
+          "Tax Deducted",
+          "Salary for the Month",
+        ],
+      ],
+      body: salaryDetails.map((salary) => [
+        salary.month,
+        salary.baseSalary,
+        salary.taxSlab,
+        salary.tax,
+        salary.finalSalary,
+      ]),
+    });
+    doc.save("salary_report.pdf");
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center ">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 className="text-2xl font-bold mb-6 text-center">Salary Details</h2>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="border p-2">Month</th>
+              <th className="border p-2">Base Salary (Yearly)</th>
+              <th className="border p-2">Tax Slab</th>
+              <th className="border p-2">Tax Deducted</th>
+              <th className="border p-2">Salary for the Month</th>
+            </tr>
+          </thead>
+          <tbody>
+            {salaryDetails.map((salary, index) => (
+              <tr key={index}>
+                <td className="border p-2">{salary.month}</td>
+                <td className="border p-2">{salary.baseSalary}</td>
+                <td className="border p-2">{salary.taxSlab}</td>
+                <td className="border p-2">{salary.tax}</td>
+                <td className="border p-2">{salary.finalSalary}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button
+          onClick={downloadPDF}
+          className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-2 rounded mt-4"
+        >
+          Download Salary Report (PDF)
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default SalaryDetails;
-
 
 // const SalaryDetails = () => {
 //     return (

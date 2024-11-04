@@ -41,7 +41,7 @@ const App = () => {
               <Header />
               <div className="flex flex-1">
                 <Sidebar />
-                <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-1 items-center justify-center bg-gradient-to-r from-teal-400 to-blue-500">
                   <ProfilePage />
                 </div>
               </div>
@@ -59,7 +59,7 @@ const App = () => {
               <Header />
               <div className="flex flex-1">
                 <Sidebar />
-                <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-1 items-center justify-center bg-gradient-to-r from-teal-400 to-blue-500">
                   <SalaryDetails />
                 </div>
               </div>
@@ -77,7 +77,7 @@ const App = () => {
               <Header />
               <div className="flex flex-1">
                 <Sidebar />
-                <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-1 items-center justify-center bg-gradient-to-r from-teal-400 to-blue-500">
                   <AttendancePage />
                 </div>
               </div>
@@ -95,7 +95,9 @@ const App = () => {
               <Header />
               <div className="flex flex-1">
                 <Sidebar />
-                <AdminDashboard />
+                <div className="flex flex-1 items-center justify-center bg-gradient-to-r from-teal-400 to-blue-500 p-10">
+                  <AdminDashboard />
+                </div>
               </div>
             </div>
           ) : (
