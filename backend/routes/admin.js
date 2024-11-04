@@ -135,4 +135,74 @@ router.post('/employee', async (req, res) => {
     }
 });
 
+// Distribute salary for the month
+router.post('/distribute-salary', async (req, res) => {
+    try {
+        const { employeeId, month, monthNumber } = req.body;
+
+        const employee = await Employee.findOne({ employeeId });
+        if (!employee) {
+            return res.status(404).json({ message: 'Employee not found' });
+        }
+
+        const baseSalary = employee.salary;
+        let taxSlab, tax;
+
+        if (baseSalary <= 500000) {
+            taxSlab = 'No Tax';
+            // tax = 0;
+        } else if (baseSalary <= 800000) {
+            taxSlab = '5%';
+            // tax = baseSalary * 0.05;
+        } else if (baseSalary <= 1500000) {
+            taxSlab = '10%';
+            // tax = baseSalary * 0.10;
+        } else {
+            taxSlab = '20%';
+            // tax = baseSalary * 0.20;
+        }
+        if (baseSalary > 1500000) {
+            // taxSlab = 'No Tax';
+            tax = (baseSalary - 1500000) * 0.2 + 700000 * 0.1 + 300000 * 0.05;
+        } else if (baseSalary <= 800000 && baseSalary > 500000) {
+            tax = (baseSalary - 500000) * 0.05;
+            // taxSlab = '5%';
+            // tax = baseSalary * 0.05;
+        } else if (baseSalary <= 1500000 && baseSalary > 800000) {
+            tax = (baseSalary - 800000) * 0.1 + 30000;
+            // taxSlab = '10%';
+            tax = baseSalary * 0.10;
+        } else {
+            tax = 0;
+            // taxSlab = '20%';
+            // tax = baseSalary * 0.20;
+        }
+
+        const finalSalary = (baseSalary - tax) / 12;
+
+        const newSalary = new Salary({
+            employeeId,
+            month,
+            monthNumber,
+            sickLeavesAlloted: employee.sickLeavesAlloted,
+            sickLeavesTaken: employee.sickLeavesTaken,
+            casualLeavesAlloted: employee.casualLeavesAlloted,
+            casualLeavesTaken: employee.casualLeavesTaken,
+            finalSalary,
+            totalDaysPresent: 20, // Assuming 20 days present for simplicity
+            baseSalary,
+            deductions: tax,
+            taxSlab,
+            tax,
+            netSalary: finalSalary
+        });
+
+        await newSalary.save();
+        res.status(201).json(newSalary);
+    } catch (error) {
+        console.error('Error distributing salary:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

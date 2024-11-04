@@ -27,6 +27,9 @@ const AdminDashboard = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDistributeModalOpen, setIsDistributeModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [month, setMonth] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -125,6 +128,29 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDistributeSalary = (employee) => {
+    setSelectedEmployee(employee);
+    setIsDistributeModalOpen(true);
+  };
+
+  const handleDistributeFormChange = (e) => {
+    setMonth(e.target.value);
+  };
+
+  const handleSaveDistribute = async () => {
+    try {
+      const monthNumber = new Date(`${month}-01`).getMonth() + 1;
+      const response = await axiosInstance.post('/admin/distribute-salary', {
+        employeeId: selectedEmployee.employeeId,
+        month,
+        monthNumber
+      });
+      setIsDistributeModalOpen(false);
+    } catch (error) {
+      console.error('Error distributing salary:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
@@ -135,6 +161,7 @@ const AdminDashboard = () => {
             <thead>
               <tr>
                 <th className="border p-2">Employee ID</th>
+                <th className="border p-2">Employee Name</th>
                 <th className="border p-2">Leave Type</th>
                 <th className="border p-2">Date</th>
                 <th className="border p-2">Actions</th>
@@ -144,6 +171,7 @@ const AdminDashboard = () => {
               {leaveRequests.map((leave, index) => (
                 <tr key={index}>
                   <td className="border p-2">{leave.employee}</td>
+                  <td className="border p-2">{leave.employeeName}</td>
                   <td className="border p-2">{leave.leaveType}</td>
                   <td className="border p-2">{new Date(leave.date).toLocaleDateString()}</td>
                   <td className="border p-2">
@@ -202,6 +230,12 @@ const AdminDashboard = () => {
                       className="bg-red-500 text-white p-2 rounded ml-2"
                     >
                       Delete
+                    </button>
+                    <button
+                      onClick={() => handleDistributeSalary(employee)}
+                      className="bg-green-500 text-white p-2 rounded ml-2"
+                    >
+                      Distribute Salary
                     </button>
                   </td>
                 </tr>
@@ -370,6 +404,27 @@ const AdminDashboard = () => {
               className="bg-green-500 text-white p-2 rounded"
             >
               Save
+            </button>
+          </form>
+        </Modal>
+        <Modal isOpen={isDistributeModalOpen} onClose={() => setIsDistributeModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-2">Distribute Salary</h3>
+          <form>
+            <div className="mb-4">
+              <label className="block text-gray-700">Month</label>
+              <input
+                type="month"
+                value={month}
+                onChange={handleDistributeFormChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleSaveDistribute}
+              className="bg-green-500 text-white p-2 rounded"
+            >
+              Distribute
             </button>
           </form>
         </Modal>
