@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3000/api', // Replace with your API base URL
+    baseURL: 'https://employee-management-system-backend-pywi.onrender.com/api', // Replace with your API base URL
 });
 
 // Add a request interceptor
